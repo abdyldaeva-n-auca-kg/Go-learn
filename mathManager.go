@@ -15,31 +15,61 @@ func main() {
 		switch app {
 		case "salary manager":
 			fmt.Println("You are in salary manager.")
-			var salaries []float64
+			var salaries []int
 			for {
-				var salary float64
-				fmt.Println("Enter salary(enter 'done' to finish): ")
-				_, err := fmt.Scanf("%f", &salary)
+				var salary int
+				fmt.Println("Enter salaries(enter 'done' to finish): ")
+				_, err := fmt.Scan(&salary)
 				if err != nil {
 					fmt.Println("Invalid input. Please enter valid integer.")
 					continue
 				}
 				salaries = append(salaries, salary)
+
 			}
 
 			for {
 				fmt.Println("Enter a command(sum, aver, min, max) or 'exit' to quit: ")
 				var command string
-				_, err := fmt.Scanln(&command)
+				_, err := fmt.Scan(&command)
 				if err != nil {
 					fmt.Println("Incorrect. Please, try again: ")
 					continue
 				}
 				switch command {
 				case "sum":
+					sum := 0
+					for _, salary := range salaries {
+						sum += salary
+					}
+					fmt.Println("Sum of salaries: %d\n", sum)
 				case "aver":
+					sum := 0
+					for _, salary := range salaries {
+						sum += salary
+					}
+					aver := sum / int(len(salaries))
+					fmt.Println("Average of salary: %d\n", aver)
 				case "min":
+					min := salaries[0]
+					for _, salary := range salaries {
+						if salary < min {
+							min = salary
+						}
+					}
+					fmt.Println("Minimum salary: %d\n", min)
 				case "max":
+					max := salaries[0]
+					for _, salary := range salaries {
+						if salary > max {
+							max = salary
+						}
+					}
+					fmt.Println("Maximum salary: %d\n", max)
+				case "exit":
+					return
+				default:
+					fmt.Println("Invalid command. Please try again.")
 				}
 			}
 		case "calculator":
@@ -52,10 +82,8 @@ func main() {
 
 				}
 			}
-			if app == "exit" {
-				break
-			}
-
+		case "exit":
+			os.Exit(0)
 		}
 	}
 	if scanner.Err() != nil {
