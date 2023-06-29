@@ -4,52 +4,60 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Hello, you are in the math manager system")
-	fmt.Println("Please, print app you want to access(to exit print 'exit'): ")
+	fmt.Println("Please, print app you want access to(to exit print 'exit'): ")
 	for scanner.Scan() {
 		app := scanner.Text()
 		switch app {
 		case "salary manager":
 			fmt.Println("You are in salary manager.")
-			var salaries []int
+			var salaries []int64
 			for {
-				var salary int
-				fmt.Println("Enter salaries(enter 'done' to finish): ")
+				var salary string
+				fmt.Println("Enter salary(enter 'done' to finish): ")
 				_, err := fmt.Scan(&salary)
 				if err != nil {
 					fmt.Println("Invalid input. Please enter valid integer.")
-					continue
 				}
-				salaries = append(salaries, salary)
-
+				if salary == "done" {
+					break
+				} else {
+					sal, err := strconv.ParseInt(salary, 10, 0)
+					if err != nil {
+						fmt.Println("Invalid input. Please enter valid integer.")
+						continue
+					}
+					salaries = append(salaries, sal)
+				}
 			}
-
+			fmt.Println(salaries)
 			for {
 				fmt.Println("Enter a command(sum, aver, min, max) or 'exit' to quit: ")
 				var command string
-				_, err := fmt.Scan(&command)
-				if err != nil {
+				_, _ = fmt.Scan(&command)
+				/*if err != nil {
 					fmt.Println("Incorrect. Please, try again: ")
 					continue
-				}
+				}*/
 				switch command {
 				case "sum":
-					sum := 0
+					var sum int64 = 0
 					for _, salary := range salaries {
 						sum += salary
 					}
-					fmt.Println("Sum of salaries: %d\n", sum)
+					fmt.Println("Sum of salaries:", sum)
 				case "aver":
 					sum := 0
 					for _, salary := range salaries {
-						sum += salary
+						sum += int(salary)
 					}
-					aver := sum / int(len(salaries))
-					fmt.Println("Average of salary: %d\n", aver)
+					aver := sum / len(salaries)
+					fmt.Println("Average of salary:", aver)
 				case "min":
 					min := salaries[0]
 					for _, salary := range salaries {
@@ -57,7 +65,7 @@ func main() {
 							min = salary
 						}
 					}
-					fmt.Println("Minimum salary: %d\n", min)
+					fmt.Println("Minimum salary:", min)
 				case "max":
 					max := salaries[0]
 					for _, salary := range salaries {
@@ -65,11 +73,11 @@ func main() {
 							max = salary
 						}
 					}
-					fmt.Println("Maximum salary: %d\n", max)
+					fmt.Println("Maximum salary:", max)
 				case "exit":
 					return
 				default:
-					fmt.Println("Invalid command. Please try again.")
+					fmt.Println("Incorrect command. Please try again.")
 				}
 			}
 		case "calculator":
