@@ -107,4 +107,118 @@ func main() {
 			}
 		}
 	}
+	package main
+
+import (
+ "encoding/json"
+ "fmt"
+ "io/ioutil"
+ "os"
+)
+
+type Task struct {
+ Description string json:"description"
+}
+
+func loadTasksFromJSON(filename string) ([]Task, error) {
+ tasks := []Task{}
+
+ data, err := ioutil.ReadFile(filename)
+ if err != nil {
+  if os.IsNotExist(err) {
+   return tasks, nil
+  }
+  return nil, err
+ }
+
+ err = json.Unmarshal(data, &tasks)
+ if err != nil {
+  return nil, err
+ }
+
+ return tasks, nil
+}
+
+func saveTasksToJSON(filename string, tasks []Task) error {
+ data, err := json.Marshal(tasks)
+ if err != nil {
+  return err
+ }
+
+ err = ioutil.WriteFile(filename, data, 0644)
+ if err != nil {
+  return err
+ }
+
+ return nil
+}
+
+func addTask(taskDescription string, tasks *[]Task) {
+ newTask := Task{Description: taskDescription}
+ *tasks = append(*tasks, newTask)
+}
+
+func removeTask(taskDescription string, tasks *[]Task) {
+ for i, task := range *tasks {
+  if task.Description == taskDescription {
+   *tasks = append((*tasks)[:i], (*tasks)[i+1:]...)
+   return
+  }
+ }
+}
+
+func displayTasks(tasks []Task) {
+ fmt.Println("Todo List:")
+ for i, task := range tasks {
+  fmt.Printf("%d. %s\n", i+1, task.Description)
+ }
+}
+
+func main() {
+ const filename = "todo_list.json"
+ tasks, err := loadTasksFromJSON(filename)
+ if err != nil {
+  fmt.Printf("Error loading tasks: %s\n", err)
+  return
+ }
+
+ for {
+  var choice int
+  fmt.Println("\n1. Add Task\n2. Remove Task\n3. Display Tasks\n4. Exit")
+  fmt.Print("Enter your choice (1/2/3/4): ")
+  _, err := fmt.Scan(&choice)
+  if err != nil {
+   fmt.Println("Invalid input. Please try again.")
+   continue
+  }
+
+  switch choice {
+  case 1:
+   var taskDescription string
+   fmt.Print("Enter the new task: ")
+   fmt.Scan(&taskDescription)
+   addTask(taskDescription, &tasks)
+   err = saveTasksToJSON(filename, tasks)
+   if err != nil {
+    fmt.Printf("Error saving tasks: %s\n", err)
+   }
+  case 2:
+   var taskDescription string
+   fmt.Print("Enter the task to remove: ")
+   fmt.Scan(&taskDescription)
+   removeTask(taskDescription, &tasks)
+   err = saveTasksToJSON(filename, tasks)
+   if err != nil {
+    fmt.Printf("Error saving tasks: %s\n", err)
+   }
+  case 3:
+   displayTasks(tasks)
+  case 4:
+   fmt.Println("Exiting the program.")
+   return
+  default:
+   fmt.Println("Invalid choice. Please try again.")
+  }
+ }
+}
 }
